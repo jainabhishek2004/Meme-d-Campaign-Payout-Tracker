@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #dfe5f2;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+.neo-card {
+  background: #fff;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+  border-radius: 4px;
+}
+
+.neo-btn {
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0px 0px #000;
+  border-radius: 4px;
+  font-weight: 700;
+  transition: all 0.1s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.neo-btn:hover {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.neo-input {
+  border: 2px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.1s;
+}
+.neo-input:focus {
+  box-shadow: 4px 4px 0px 0px #000;
+}
+
+.neo-badge {
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
