@@ -162,6 +162,7 @@ npm run dev          # starts on http://localhost:3000
 | `JWT_SECRET`    | **Yes**  | Secret for signing JWTs                      | `some_long_random_string`                     |
 | `JWT_EXPIRES_IN`| No       | JWT lifetime (default: `7d`)                 | `7d`                                          |
 | `FRONTEND_URL`  | No       | Allowed CORS origin (default: localhost:3000)| `https://memed-frontend.vercel.app`           |
+| `GOOGLE_CLIENT_ID` | For Google sign-in | OAuth 2.0 Web client ID from Google Cloud | `...apps.googleusercontent.com` |
 
 Optional backend setting: REDIS_URL defaults to redis://localhost:6379; the campaign cache falls back to in-memory storage if Redis is unavailable.
 
@@ -170,6 +171,9 @@ Optional backend setting: REDIS_URL defaults to redis://localhost:6379; the camp
 | Variable              | Required | Description                   | Example                               |
 |-----------------------|----------|-------------------------------|---------------------------------------|
 | `NEXT_PUBLIC_API_URL` | **Yes**  | Backend API base URL          | `https://memed-backend.onrender.com`  |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | For Google sign-in | Same OAuth 2.0 Web client ID; exposed to browser by design | `...apps.googleusercontent.com` |
+
+To enable Google sign-in, create an OAuth 2.0 **Web application** client in Google Cloud Console and add your local (`http://localhost:3000`) and deployed frontend origins to its authorized JavaScript origins. Set the resulting client ID as `GOOGLE_CLIENT_ID` on the backend and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` on the frontend. Google ID tokens are verified by the backend before an application JWT is issued. New users choose their brand or creator role on the signup page; existing accounts with the same verified email are linked to Google.
 
 ---
 
@@ -181,6 +185,7 @@ Optional backend setting: REDIS_URL defaults to redis://localhost:6379; the camp
 |--------|----------------------|------|-----------------------------------|-----------------------|
 | POST   | `/api/auth/signup`   | —    | `{ name, email, password, role }` | Register new user     |
 | POST   | `/api/auth/login`    | —    | `{ email, password }`             | Login, returns JWT    |
+| POST   | `/api/auth/google`   | —    | `{ credential, role? }`           | Verify Google ID token and return JWT; new users without a role receive `{ requiresRole: true }` and choose one before account creation |
 
 ### Campaigns
 

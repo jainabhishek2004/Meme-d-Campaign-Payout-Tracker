@@ -6,7 +6,8 @@ export type UserRole = 'brand' | 'creator';
 export interface IUser extends Document {
   name: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
@@ -35,9 +36,10 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: false,
       minlength: [6, 'Password must be at least 6 characters'],
     },
+    googleId: { type: String, unique: true, sparse: true },
     role: {
       type: String,
       enum: {
@@ -59,6 +61,7 @@ userSchema.pre<IUser>('save', async function (next) {
   }
 
   try {
+    if (!this.password) return next();
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
@@ -69,6 +72,7 @@ userSchema.pre<IUser>('save', async function (next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+  if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
 };
 

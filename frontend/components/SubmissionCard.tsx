@@ -60,22 +60,20 @@ export default function SubmissionCard({
   };
 
   const platform = submission.campaign?.platform || 'Instagram';
-  const platformColor = platform === 'Instagram' ? 'bg-[#E1306C]' : 'bg-[#FF0000]';
-
   return (
-    <div className="neo-card p-5 bg-white flex flex-col justify-between">
+    <article className="surface flex min-w-0 flex-col justify-between p-4 sm:p-5">
       {error && (
         <div
           role="alert"
           aria-live="assertive"
-          className="fixed inset-x-4 top-20 z-[60] mx-auto flex max-w-xl items-start justify-between gap-4 border-2 border-red-600 bg-red-100 px-4 py-3 text-sm font-bold text-red-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          className="fixed inset-x-4 top-20 z-[60] mx-auto flex max-w-xl items-start justify-between gap-4 rounded-xl border border-[#efd2ce] bg-[#fbefed] px-4 py-3 text-sm font-medium text-[#8e3c35] shadow-lg"
         >
           <span>{error}</span>
           <button
             type="button"
             aria-label="Dismiss error notification"
             onClick={() => setError(null)}
-            className="shrink-0 px-1 text-lg leading-none hover:text-black"
+            className="shrink-0 px-1 text-lg leading-none"
           >
             ×
           </button>
@@ -84,11 +82,11 @@ export default function SubmissionCard({
 
       <div>
         {/* Top: Campaign name + platform badge */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h4 className="font-bold text-base text-[#1a1a1a] leading-tight line-clamp-1">
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <h4 className="line-clamp-2 break-words text-base font-medium leading-snug tracking-[-.025em] sm:text-lg">
             {submission.campaign?.name || 'Campaign Post'}
           </h4>
-          <span className={`neo-badge ${platformColor} text-white flex-shrink-0`}>
+          <span className="platform-label shrink-0">
             {platform}
           </span>
         </div>
@@ -99,7 +97,7 @@ export default function SubmissionCard({
             href={submission.postLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-black bg-gray-100 hover:bg-[#FFDC58] px-2.5 py-1.5 border-2 border-black rounded-sm truncate max-w-full transition-colors"
+            className="inline-flex max-w-full items-center gap-1.5 truncate rounded-lg bg-[#f5f5f2] px-3 py-2.5 font-mono text-[11px] text-[#5b5b56] transition-colors hover:bg-[#efefeb]"
           >
             <span className="truncate">{submission.postLink}</span>
             <span className="flex-shrink-0 font-sans font-black">↗</span>
@@ -108,13 +106,13 @@ export default function SubmissionCard({
 
         {/* Spike Detection Flag (Bonus Feature) */}
         {submission.isFlagged && (
-          <div className="mb-3 p-2 bg-amber-100 border-2 border-amber-600 text-amber-950 text-xs font-bold rounded-sm flex items-start gap-1.5 shadow-[2px_2px_0px_0px_rgba(217,119,6,1)]">
-            <span className="text-base leading-none">🚩</span>
+          <div className="notice mb-3 flex items-start gap-2 border border-[#eadfc7] bg-[#f8f3e9] text-xs text-[#75603b]">
+            <span className="leading-none">!</span>
             <div>
-              <p className="font-black uppercase tracking-wider text-[10px] text-amber-800">
+              <p className="text-[10px] font-semibold uppercase tracking-wider">
                 Flagged: View Spike Detected
               </p>
-              <p className="text-[11px] font-semibold text-amber-900 mt-0.5">
+              <p className="mt-0.5 text-[11px]">
                 {submission.flagReason || 'Unusually rapid view increase detected.'}
               </p>
             </div>
@@ -122,59 +120,59 @@ export default function SubmissionCard({
         )}
 
         {/* Two stat boxes side by side */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-3 bg-white border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-[10px] font-black uppercase tracking-wider text-gray-500">
-              👁 Views
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-[#f5f5f2] p-3.5">
+            <p className="eyebrow !text-[9px]">
+              Views
             </p>
-            <p className="text-xl font-black text-[#1a1a1a] mt-0.5">
+            <p className="mt-1 text-xl font-medium tracking-[-.04em]">
               {formatNumber(submission.views || 0)}
             </p>
           </div>
 
-          <div className="p-3 bg-[#FFDC58] border-2 border-black rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <p className="text-[10px] font-black uppercase tracking-wider text-black">
-              💰 Earned
+          <div className="rounded-xl bg-[#e9eee7] p-3.5">
+            <p className="eyebrow !text-[9px]">
+              Earned
             </p>
-            <p className="text-xl font-black text-black mt-0.5">
+            <p className="mt-1 text-xl font-medium tracking-[-.04em]">
               ₹{formatNumber(submission.currentPayout || 0)}
             </p>
           </div>
         </div>
 
         {/* Simulate Views section */}
-        <div className="p-3 bg-gray-50 border-2 border-black rounded-sm mb-3">
-          <p className="text-[11px] font-bold text-gray-700 mb-2">
+        <div className="mb-3 rounded-xl bg-[#f8f8f6] p-3.5">
+          <p className="mb-2 text-[11px] font-medium text-[#777773]">
             Update view count (simulates platform data)
           </p>
-          <form onSubmit={handleUpdateViews} className="flex gap-2">
+          <form onSubmit={handleUpdateViews} className="flex min-w-0 gap-2">
             <input
               type="number"
               min={submission.views || 0}
               step="1"
               value={newViews}
               onChange={(e) => setNewViews(Number(e.target.value))}
-              className="neo-input !py-1 !px-2.5 text-xs font-bold"
+              className="field min-w-0 !min-h-10 !px-3 !py-1 text-xs"
               required
             />
             <button
               type="submit"
               disabled={loading}
-              className="neo-btn bg-[#FFDC58] text-black px-3 py-1 text-xs font-black flex-shrink-0 disabled:opacity-50"
+              className="btn btn-primary btn-sm shrink-0 disabled:opacity-50"
             >
               {loading ? '...' : 'Update'}
             </button>
           </form>
           {success && (
-            <p className="text-green-700 text-xs font-bold mt-2">
-              ✓ Views updated & payout refreshed!
+            <p className="mt-2 text-xs text-[#526b50]">
+              Views and payout updated.
             </p>
           )}
         </div>
       </div>
 
       {/* Timestamp at bottom */}
-      <div className="pt-2 border-t-2 border-black/10 text-[11px] font-bold text-gray-500 flex items-center justify-between">
+      <div className="flex items-center justify-between border-t border-[#efefec] pt-3 text-[11px] text-[#85857f]">
         <span>
           Submitted{' '}
           {submission.createdAt
@@ -182,6 +180,6 @@ export default function SubmissionCard({
             : 'Recently'}
         </span>
       </div>
-    </div>
+    </article>
   );
 }

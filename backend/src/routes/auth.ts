@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { signup, login } from '../controllers/authController';
+import { signup, login, googleLogin } from '../controllers/authController';
 
 const router = Router();
 
@@ -8,5 +8,8 @@ router.post('/signup', signup);
 
 // POST /api/auth/login - Authenticate existing user
 router.post('/login', login);
+
+// POST /api/auth/google - Verify Google ID token and issue an app JWT
+router.post('/google', googleLogin);
 
 export default router;

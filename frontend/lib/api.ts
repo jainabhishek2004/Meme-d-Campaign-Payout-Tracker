@@ -56,6 +56,19 @@ function extractData<T>(res: any): T {
 }
 
 export const authApi = {
+  googleSignIn: async (
+    credential: string,
+    role?: 'brand' | 'creator'
+  ): Promise<AuthResponse | { requiresRole: true }> => {
+    const res = await request<any>('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential, role }),
+    });
+    const parsed = extractData<any>(res);
+    if (parsed.requiresRole === true) return { requiresRole: true };
+    return { token: parsed.token || res.token, user: parsed.user || res.user };
+  },
+
   login: async (email: string, password: string): Promise<AuthResponse> => {
     const res = await request<any>('/api/auth/login', {
       method: 'POST',

@@ -8,21 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        main: '#FFDC58',
-        'app-bg': '#dfe5f2',
-        'dark-nav': '#1a1a1a',
-      },
-      boxShadow: {
-        neo: '4px 4px 0px 0px rgba(0,0,0,1)',
-        'neo-sm': '2px 2px 0px 0px rgba(0,0,0,1)',
-        'neo-hover': '0px 0px 0px 0px rgba(0,0,0,1)',
-      },
       borderRadius: {
-        base: '4px',
+        base: '10px',
       },
       fontFamily: {
-        sans: ['var(--font-space-grotesk)', 'sans-serif'],
+        sans: ['Inter', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
     },
   },

@@ -3,171 +3,34 @@
 import React from 'react';
 import { Campaign } from '@/types';
 
-interface CampaignCardProps {
-  campaign: Campaign;
-  showSubmitButton?: boolean;
-  onSubmit?: (id: string) => void;
-}
+interface CampaignCardProps { campaign: Campaign; showSubmitButton?: boolean; onSubmit?: (id: string) => void; }
 
-export default function CampaignCard({
-  campaign,
-  showSubmitButton = false,
-  onSubmit,
-}: CampaignCardProps) {
-  const budgetSpent = campaign.budgetSpent || 0;
-  const totalBudget = campaign.totalBudget || 0;
-  const budgetRemaining = Math.max(0, totalBudget - budgetSpent);
-  const percentSpent =
-    totalBudget > 0 ? Math.min(100, Math.round((budgetSpent / totalBudget) * 100)) : 0;
-  const isBudgetExhausted = budgetRemaining <= 0;
-  const isActive = campaign.status === 'active' && !isBudgetExhausted;
+export default function CampaignCard({ campaign, showSubmitButton = false, onSubmit }: CampaignCardProps) {
+  const spent = campaign.budgetSpent || 0;
+  const budget = campaign.totalBudget || 0;
+  const remaining = Math.max(0, budget - spent);
+  const percent = budget > 0 ? Math.min(100, Math.round(spent / budget * 100)) : 0;
+  const exhausted = remaining <= 0;
+  const active = campaign.status === 'active' && !exhausted;
+  const money = (value: number) => `₹${new Intl.NumberFormat('en-IN').format(value)}`;
+  const views = (value: number) => value >= 1_000_000 ? `${(value / 1_000_000).toFixed(1)}M` : value >= 1_000 ? `${(value / 1_000).toFixed(0)}K` : String(value);
+  const milestones = [...(campaign.milestones || [])].sort((a, b) => a.viewThreshold - b.viewThreshold);
 
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-IN').format(num);
-  };
-
-  const formatViews = (views: number) => {
-    if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`;
-    if (views >= 1_000) return `${(views / 1_000).toFixed(0)}K`;
-    return views.toString();
-  };
-
-  const sortedMilestones = [...(campaign.milestones || [])].sort(
-    (a, b) => a.viewThreshold - b.viewThreshold
-  );
-
-  return (
-    <div className="neo-card p-5 bg-white flex flex-col justify-between">
-      <div>
-        {/* Header row: Platform badge + Status badge */}
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2">
-            {campaign.platform === 'Instagram' ? (
-              <span className="neo-badge bg-[#E1306C] text-white">
-                Instagram
-              </span>
-            ) : (
-              <span className="neo-badge bg-[#FF0000] text-white">
-                YouTube
-              </span>
-            )}
-          </div>
-
-          <span
-            className={`neo-badge ${
-              isActive
-                ? 'bg-[#FFDC58] text-black'
-                : isBudgetExhausted
-                ? 'bg-gray-200 text-gray-700'
-                : 'bg-gray-200 text-gray-800'
-            }`}
-          >
-            {isBudgetExhausted ? 'Exhausted' : campaign.status}
-          </span>
-        </div>
-
-        {/* Campaign Name & Brand */}
-        <div className="mb-4">
-          <h3 className="font-bold text-lg text-[#1a1a1a] leading-tight">
-            {campaign.name}
-          </h3>
-          {campaign.brand?.name && (
-            <p className="text-xs font-semibold text-gray-500 mt-0.5">
-              by {campaign.brand.name}
-            </p>
-          )}
-        </div>
-
-        {/* Budget Section: 3-column grid */}
-        <div className="p-3 bg-gray-50 border-2 border-black rounded-sm mb-3">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div>
-              <p className="text-[10px] uppercase font-black text-gray-500 tracking-wider">
-                Total
-              </p>
-              <p className="text-xs sm:text-sm font-black text-[#1a1a1a] mt-0.5">
-                ₹{formatNumber(totalBudget)}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-black text-gray-500 tracking-wider">
-                Spent
-              </p>
-              <p className="text-xs sm:text-sm font-black text-red-600 mt-0.5">
-                ₹{formatNumber(budgetSpent)}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-black text-gray-500 tracking-wider">
-                Remaining
-              </p>
-              <p
-                className={`text-xs sm:text-sm font-black mt-0.5 ${
-                  budgetRemaining > 0 ? 'text-green-700' : 'text-gray-500'
-                }`}
-              >
-                ₹{formatNumber(budgetRemaining)}
-              </p>
-            </div>
-          </div>
-
-          {/* Progress bar: yellow fill, black border */}
-          <div className="w-full h-2.5 bg-white border-2 border-black rounded-sm overflow-hidden mt-2.5">
-            <div
-              className="h-full bg-[#FFDC58] border-r border-black transition-all"
-              style={{ width: `${percentSpent}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Milestone table: 2 columns "Views Needed" / "Payout" with alternating rows */}
-        <div className="mb-2">
-          <p className="text-[11px] font-black uppercase tracking-wider text-[#1a1a1a] mb-1.5">
-            Milestone Ladder
-          </p>
-          <div className="border-2 border-black rounded-sm overflow-hidden text-xs">
-            <div className="grid grid-cols-2 bg-gray-200 border-b-2 border-black px-3 py-1 font-black uppercase text-[10px] tracking-wider text-[#1a1a1a]">
-              <span>Views Needed</span>
-              <span className="text-right">Payout</span>
-            </div>
-            <div className="divide-y divide-black/20">
-              {sortedMilestones.map((m, idx) => (
-                <div
-                  key={idx}
-                  className={`grid grid-cols-2 px-3 py-1.5 font-bold ${
-                    idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                  }`}
-                >
-                  <span className="text-gray-800">
-                    👁 {formatViews(m.viewThreshold)} ({formatNumber(m.viewThreshold)})
-                  </span>
-                  <span className="text-right font-black text-green-700">
-                    ₹{formatNumber(m.payout)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Submit Button (if showSubmitButton=true) */}
-      {showSubmitButton && (
-        <div className="pt-3 mt-2 border-t-2 border-black">
-          <button
-            type="button"
-            onClick={() => onSubmit && onSubmit(campaign._id)}
-            disabled={!isActive}
-            className={`neo-btn w-full py-2.5 text-xs font-black ${
-              isActive
-                ? 'bg-[#FFDC58] text-black'
-                : 'bg-gray-200 text-gray-500 border-gray-400 cursor-not-allowed shadow-none'
-            }`}
-          >
-            {isBudgetExhausted ? 'Budget Exhausted' : 'Submit Post →'}
-          </button>
-        </div>
-      )}
+  return <article className="surface flex min-w-0 flex-col p-3.5 sm:p-4">
+    <div className={`campaign-cover ${campaign.platform === 'Instagram' ? 'platform-instagram' : 'platform-youtube'} flex flex-col justify-between`}>
+      <div className="flex items-center justify-between gap-2"><span className="platform-label">{campaign.platform}</span><span className={`rounded-full px-2.5 py-1 text-[10px] font-medium capitalize ${active ? 'bg-white/75 text-[#52664e]' : 'bg-white/75 text-[#777773]'}`}>{exhausted ? 'Budget used' : campaign.status}</span></div>
+      <div className="relative z-10"><p className="text-xs text-[#6f716b]">{campaign.brand?.name || 'Creator campaign'}</p><h3 className="mt-1 max-w-[90%] break-words text-2xl font-medium leading-tight tracking-[-.05em]">{campaign.name}</h3></div>
     </div>
-  );
+    <div className="px-1 pb-1 pt-4">
+      <div className="grid grid-cols-3 gap-2">
+        {[['Budget', money(budget)], ['Spent', money(spent)], ['Available', money(remaining)]].map(([label, value]) => <div key={label} className="min-w-0"><p className="eyebrow !text-[9px]">{label}</p><p className="mt-1 truncate text-sm font-medium">{value}</p></div>)}
+      </div>
+      <div className="progress-track mt-3" role="progressbar" aria-label="Campaign budget spent" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}><div className="progress-fill" style={{ width: `${percent}%` }} /></div>
+      <div className="mt-5 flex items-center justify-between"><p className="eyebrow">Milestones</p><span className="text-[11px] text-[#85857f]">{milestones.length} tiers</span></div>
+      <div className="mt-2 divide-y divide-[#efefec] rounded-xl bg-[#f8f8f6] px-3">
+        {milestones.map((m, idx) => <div key={`${m.viewThreshold}-${idx}`} className="flex items-center justify-between gap-2 py-2.5 text-xs"><span className="text-[#777773]">{views(m.viewThreshold)} views</span><span className="font-medium">{money(m.payout)}</span></div>)}
+      </div>
+      {showSubmitButton && <button type="button" onClick={() => onSubmit?.(campaign._id)} disabled={!active} className={`btn mt-4 w-full ${active ? 'btn-primary' : 'btn-secondary'}`}>{exhausted ? 'Budget fully allocated' : active ? 'Submit a post' : 'Campaign closed'}{active && <span aria-hidden="true">↗</span>}</button>}
+    </div>
+  </article>;
 }

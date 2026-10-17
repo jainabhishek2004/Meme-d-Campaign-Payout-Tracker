@@ -150,3 +150,90 @@ export const login = async (
     next(error);
   }
 };
+
+/**
+ * Verify a Google Identity Services ID token and issue the app's own JWT.
+ * POST /api/auth/google
+ */
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { credential, role } = req.body ?? {};
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (typeof credential !== 'string' || !credential || credential.length > 12000) {
+      throw new AppError('A valid Google credential is required', 400);
+    }
+    if (!clientId) {
+      throw new AppError('Google sign-in is not configured on the server', 503);
+    }
+
+    // Google verifies the token signature and expiry; we additionally bind it
+    // to this app's OAuth client and require a verified email.
+    const verifyUrl = new URL('https://oauth2.googleapis.com/tokeninfo');
+    verifyUrl.searchParams.set('id_token', credential);
+    const googleResponse = await fetch(verifyUrl);
+    if (!googleResponse.ok) {
+      throw new AppError('Google sign-in could not verify your account', 401);
+    }
+
+    const profile = (await googleResponse.json()) as Record<string, unknown>;
+    const expiresAt = Number(profile.exp);
+    if (
+      profile.aud !== clientId ||
+      !['accounts.google.com', 'https://accounts.google.com'].includes(String(profile.iss)) ||
+      typeof profile.sub !== 'string' ||
+      typeof profile.email !== 'string' ||
+      ![true, 'true'].includes(profile.email_verified as boolean | string) ||
+      !Number.isFinite(expiresAt) ||
+      expiresAt * 1000 <= Date.now()
+    ) {
+      throw new AppError('Google sign-in returned an invalid or unverified account', 401);
+    }
+
+    const email = normalizeEmail(profile.email);
+    const name = typeof profile.name === 'string' ? profile.name.trim() : '';
+    if (!email || !name || name.length > MAX_NAME_LENGTH) {
+      throw new AppError('Your Google profile needs a valid email and name', 400);
+    }
+
+    let user = await User.findOne({ googleId: profile.sub });
+    if (user && user.email !== email) {
+      throw new AppError('The Google account email has changed. Contact support to update your account.', 409);
+    }
+    if (!user) {
+      user = await User.findOne({ email });
+      if (user) {
+        // Google has verified this email, so link it to an existing account.
+        if (user.googleId && user.googleId !== profile.sub) {
+          throw new AppError('This email is linked to a different Google account', 409);
+        }
+        user.googleId = profile.sub;
+        await user.save();
+      } else {
+        if (!['brand', 'creator'].includes(role)) {
+          res.status(200).json({ requiresRole: true });
+          return;
+        }
+        user = await User.create({
+          name,
+          email,
+          role,
+          googleId: profile.sub,
+        });
+      }
+    }
+
+    const token = generateToken(user._id.toString(), user.role, user.email);
+    res.status(200).json({
+      message: 'Google sign-in successful',
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
