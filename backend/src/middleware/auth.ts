@@ -15,9 +15,6 @@ declare global {
   }
 }
 
-/**
- * Middleware to authenticate requests via JWT Bearer token
- */
 export const authenticate = (
   req: Request,
   res: Response,
@@ -56,9 +53,6 @@ export const authenticate = (
   }
 };
 
-/**
- * Middleware guard to require brand role
- */
 export const requireBrand = (
   req: Request,
   res: Response,
@@ -77,9 +71,6 @@ export const requireBrand = (
   next();
 };
 
-/**
- * Middleware guard to require creator role
- */
 export const requireCreator = (
   req: Request,
   res: Response,

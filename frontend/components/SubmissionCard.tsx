@@ -81,7 +81,7 @@ export default function SubmissionCard({
       )}
 
       <div>
-        {/* Top: Campaign name + platform badge */}
+
         <div className="mb-3 flex items-start justify-between gap-2">
           <h4 className="line-clamp-2 break-words text-base font-medium leading-snug tracking-[-.025em] sm:text-lg">
             {submission.campaign?.name || 'Campaign Post'}
@@ -91,7 +91,6 @@ export default function SubmissionCard({
           </span>
         </div>
 
-        {/* Post link: truncated with external link icon */}
         <div className="mb-3">
           <a
             href={submission.postLink}
@@ -104,7 +103,6 @@ export default function SubmissionCard({
           </a>
         </div>
 
-        {/* Spike Detection Flag (Bonus Feature) */}
         {submission.isFlagged && (
           <div className="notice mb-3 flex items-start gap-2 border border-[#eadfc7] bg-[#f8f3e9] text-xs text-[#75603b]">
             <span className="leading-none">!</span>
@@ -119,7 +117,6 @@ export default function SubmissionCard({
           </div>
         )}
 
-        {/* Two stat boxes side by side */}
         <div className="mb-4 grid grid-cols-2 gap-2">
           <div className="rounded-xl bg-[#f5f5f2] p-3.5">
             <p className="eyebrow !text-[9px]">
@@ -140,7 +137,6 @@ export default function SubmissionCard({
           </div>
         </div>
 
-        {/* Simulate Views section */}
         <div className="mb-3 rounded-xl bg-[#f8f8f6] p-3.5">
           <p className="mb-2 text-[11px] font-medium text-[#777773]">
             Update view count (simulates platform data)
@@ -171,7 +167,6 @@ export default function SubmissionCard({
         </div>
       </div>
 
-      {/* Timestamp at bottom */}
       <div className="flex items-center justify-between border-t border-[#efefec] pt-3 text-[11px] text-[#85857f]">
         <span>
           Submitted{' '}

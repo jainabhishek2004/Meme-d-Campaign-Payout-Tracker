@@ -11,20 +11,11 @@ export interface BudgetAllocationResult {
   capped: boolean;
 }
 
-/**
- * Calculates the payout based on views and milestones.
- * A creator's payout = the amount of the HIGHEST milestone their post's view count has crossed.
- *
- * @param views Total views on the post
- * @param milestones List of milestones (viewThreshold, payout)
- * @returns Payout amount
- */
 export function calculatePayout(views: number, milestones: Milestone[]): number {
   if (!milestones || milestones.length === 0 || views <= 0) {
     return 0;
   }
 
-  // Sort ascending by viewThreshold to ensure proper threshold evaluation
   const sortedMilestones = [...milestones].sort((a, b) => a.viewThreshold - b.viewThreshold);
 
   let payout = 0;
@@ -39,15 +30,6 @@ export function calculatePayout(views: number, milestones: Milestone[]): number 
   return payout;
 }
 
-/**
- * Calculates the budget allocation ensuring the campaign never exceeds totalBudget,
- * handles delta calculation, idempotency, and capping to remaining budget.
- *
- * @param currentPayout Currently recorded payout for this submission
- * @param calculatedPayout New payout calculated based on current views
- * @param totalBudget Total campaign budget
- * @param budgetSpent Current budget spent across all submissions
- */
 export function calculateBudgetAllocation(
   currentPayout: number,
   calculatedPayout: number,

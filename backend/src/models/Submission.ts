@@ -63,7 +63,6 @@ const submissionSchema = new Schema<ISubmission>(
   }
 );
 
-// Prevent the same creator from submitting the same post URL to the same campaign more than once
 submissionSchema.index({ creator: 1, campaign: 1, postLink: 1 }, { unique: true });
 
 export const Submission: Model<ISubmission> = mongoose.model<ISubmission>(

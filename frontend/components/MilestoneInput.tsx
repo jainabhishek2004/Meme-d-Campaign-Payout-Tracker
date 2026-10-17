@@ -67,58 +67,53 @@ export default function MilestoneInput({
             milestone.payout > totalBudget;
 
           return (
-            <div
-              key={index}
-              className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2.5rem] items-center gap-2 rounded-xl bg-[#f7f7f4] p-2.5 sm:flex sm:gap-3"
-            >
-              {/* Views Input */}
-              <div className="flex min-w-0 items-center overflow-hidden rounded-lg border border-[#e2e2dc] bg-white focus-within:ring-2 focus-within:ring-[#dce6d8] sm:flex-1">
+            <div key={index} className="milestone-row">
+              <div className="milestone-control flex min-w-0 items-center overflow-hidden rounded-lg border border-[#e2e2dc] bg-white focus-within:ring-2 focus-within:ring-[#dce6d8]">
                 <span className="select-none px-3 py-3 text-xs font-medium text-[#777773]">
                   Views
                 </span>
                 <input
+                  id={`milestone-views-${index}`}
                   type="number"
                   min="1"
-                  step="any"
+                  step="1"
                   value={milestone.viewThreshold || ''}
                   onChange={(e) =>
-                    handleChange(index, 'viewThreshold', parseInt(e.target.value) || 0)
+                    handleChange(index, 'viewThreshold', parseFloat(e.target.value) || 0)
                   }
                   placeholder="e.g. 10000"
                   className="w-full min-w-0 border-0 bg-transparent px-2 py-2.5 text-xs outline-none sm:px-2.5 sm:text-sm"
+                  aria-label={`Tier ${index + 1} view threshold`}
                   required
                 />
               </div>
 
-              {/* Payout Input */}
-              <div
-                className={`flex min-w-0 items-center overflow-hidden rounded-lg border bg-white focus-within:ring-2 focus-within:ring-[#dce6d8] sm:flex-1 ${
-                  isOverBudget ? 'border-red-400' : 'border-[#e2e2dc]'
-                }`}
-              >
-                <span className="select-none px-3 py-3 text-xs font-medium text-[#777773]">
-                  ₹
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  step="any"
-                  value={milestone.payout || ''}
-                  onChange={(e) =>
-                    handleChange(index, 'payout', parseFloat(e.target.value) || 0)
-                  }
-                  placeholder="e.g. 1500"
-                  className="w-full min-w-0 border-0 bg-transparent px-2 py-2.5 text-xs outline-none sm:px-2.5 sm:text-sm"
-                  required
-                />
+              <div className="milestone-control">
+                <div className={`flex min-w-0 items-center overflow-hidden rounded-lg border bg-white focus-within:ring-2 focus-within:ring-[#dce6d8] ${isOverBudget ? 'border-red-400' : 'border-[#e2e2dc]'}`}>
+                  <span className="select-none px-3 py-3 text-xs font-medium text-[#777773]">₹</span>
+                  <input
+                    id={`milestone-payout-${index}`}
+                    type="number"
+                    min="1"
+                    step="any"
+                    value={milestone.payout || ''}
+                    onChange={(e) => handleChange(index, 'payout', parseFloat(e.target.value) || 0)}
+                    placeholder="e.g. 1500"
+                    className="w-full min-w-0 border-0 bg-transparent px-2 py-2.5 text-xs outline-none sm:px-2.5 sm:text-sm"
+                    aria-label={`Tier ${index + 1} payout in rupees`}
+                    aria-invalid={isOverBudget}
+                    aria-describedby={isOverBudget ? `milestone-payout-error-${index}` : undefined}
+                    required
+                  />
+                </div>
+                {isOverBudget && <p id={`milestone-payout-error-${index}`} className="milestone-field-error">Over budget by ₹{new Intl.NumberFormat('en-IN').format(milestone.payout - (totalBudget || 0))}. Lower this payout or increase the campaign budget.</p>}
               </div>
 
-              {/* Remove Button */}
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
                 disabled={milestones.length <= 1}
-                className="col-start-3 row-span-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-lg text-[#777773] transition-colors hover:bg-[#f2efee] hover:text-[#a4473f] disabled:cursor-not-allowed disabled:opacity-30 sm:ml-1"
+                className="milestone-remove flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-lg text-[#777773] transition-colors hover:bg-[#f2efee] hover:text-[#a4473f] disabled:cursor-not-allowed disabled:opacity-30"
                 title="Remove tier"
                 aria-label="Remove tier"
               >
@@ -129,7 +124,6 @@ export default function MilestoneInput({
         })}
       </div>
 
-      {/* Dashed "+ Add Milestone" button */}
       <button
         type="button"
         onClick={handleAdd}

@@ -10,28 +10,23 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Centralized error handler middleware
- */
 export const errorHandler = (
   err: any,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   next: NextFunction
 ): void => {
-  // Log unexpected errors
+
   if (!err.statusCode || err.statusCode === 500) {
     console.error('Unhandled Error:', err);
   }
 
-  // Custom AppError
   if (err instanceof AppError) {
     res.status(err.statusCode).json({ message: err.message });
     return;
   }
 
-  // Mongoose validation error
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors || {}).map((e: any) => e.message);
     res.status(400).json({
@@ -41,7 +36,6 @@ export const errorHandler = (
     return;
   }
 
-  // Mongoose CastError (e.g., invalid ObjectId)
   if (err.name === 'CastError') {
     res.status(400).json({
       message: `Invalid format for field '${err.path}': '${err.value}'`,
@@ -49,7 +43,6 @@ export const errorHandler = (
     return;
   }
 
-  // MongoDB duplicate key error
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue || {})[0] || 'field';
     res.status(400).json({
@@ -58,13 +51,11 @@ export const errorHandler = (
     return;
   }
 
-  // JSON parsing error
   if (err instanceof SyntaxError && 'body' in err) {
     res.status(400).json({ message: 'Malformed JSON payload' });
     return;
   }
 
-  // Generic fallback
   const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
   const message = err.message || 'Internal Server Error';
 

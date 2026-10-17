@@ -6,10 +6,6 @@ import { calculatePayout } from '../utils/payoutCalculator';
 import { normalizePostLink } from '../utils/normalizePostLink';
 import { AppError } from '../middleware/errorHandler';
 
-/**
- * Submit a post for a campaign (Creator only)
- * POST /api/submissions
- */
 export const createSubmission = async (
   req: Request,
   res: Response,
@@ -68,8 +64,6 @@ export const createSubmission = async (
           );
         }
 
-        // Compare normalized URLs as well, so older rows with tracking parameters
-        // still match the same post. The unique index below handles concurrent inserts.
         const priorSubmissions = await Submission.find({
           creator: req.user!.id,
           campaign: campaignId,
@@ -90,9 +84,6 @@ export const createSubmission = async (
           );
         }
 
-        // This conditional write serializes submission creation with payout updates
-        // on this campaign. If a payout exhausts the budget first, this update fails
-        // or the transaction retries and observes the exhausted budget.
         const eligibleCampaign = await Campaign.findOneAndUpdate(
           {
             _id: campaignId,
@@ -140,10 +131,6 @@ export const createSubmission = async (
   }
 };
 
-/**
- * List all submissions for authenticated creator with earnings
- * GET /api/submissions/my
- */
 export const getMySubmissions = async (
   req: Request,
   res: Response,
@@ -168,10 +155,6 @@ export const getMySubmissions = async (
   }
 };
 
-/**
- * Update submission views and recalculate payout atomically (Public / No auth)
- * PATCH /api/submissions/:id/views
- */
 export const updateViews = async (
   req: Request,
   res: Response,
@@ -181,7 +164,6 @@ export const updateViews = async (
     const { id } = req.params;
     const { views } = req.body ?? {};
 
-    // Strict validation: views must be a whole non-negative integer (Item E)
     if (
       views === undefined ||
       typeof views !== 'number' ||
@@ -204,9 +186,9 @@ export const updateViews = async (
     const session = await mongoose.startSession();
 
     try {
-      // Both records commit together. MongoDB retries transient transaction conflicts.
+
       await session.withTransaction(async () => {
-        // The driver may rerun this callback, so reset values from prior attempts.
+
         finalSubmission = null;
         finalCalculatedPayout = 0;
         finalActualDelta = 0;
@@ -231,7 +213,6 @@ export const updateViews = async (
           ? Math.min(potentialDelta, remainingBudget)
           : 0;
 
-        // Spike detection (Bonus 2)
         let isFlagged = freshSubmission.isFlagged || false;
         let flagReason = freshSubmission.flagReason || null;
         let viewVelocity = freshSubmission.viewVelocity || 0;
@@ -269,7 +250,6 @@ export const updateViews = async (
           }
         }
 
-        // A failure here aborts the transaction and rolls back the budget increase too.
         const updatedSub = await Submission.findOneAndUpdate(
           {
             _id: id,

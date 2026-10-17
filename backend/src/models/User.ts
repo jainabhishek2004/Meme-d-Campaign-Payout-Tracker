@@ -53,8 +53,6 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
   }
 );
-
-// Pre-save hook to hash password
 userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -69,8 +67,6 @@ userSchema.pre<IUser>('save', async function (next) {
     next(error);
   }
 });
-
-// Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   if (!this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);

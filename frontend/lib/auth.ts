@@ -13,7 +13,7 @@ export const getToken = (): string | null => {
 export const setToken = (token: string): void => {
   if (!isBrowser()) return;
   localStorage.setItem(TOKEN_KEY, token);
-  // Set cookie for Next.js middleware (7 days expiry)
+
   document.cookie = `token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 };
 
@@ -43,7 +43,7 @@ export const setUser = (user: User): void => {
     role: user.role,
   };
   localStorage.setItem(USER_KEY, JSON.stringify(normalizedUser));
-  // Set role cookie for middleware routing if needed
+
   document.cookie = `role=${normalizedUser.role}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 };
 

@@ -96,12 +96,10 @@ const campaignSchema = new Schema<ICampaign>(
   }
 );
 
-// Virtual for remaining budget
 campaignSchema.virtual('budgetRemaining').get(function (this: ICampaign) {
   return Math.max(0, this.totalBudget - this.budgetSpent);
 });
 
-// Pre-save hook: ensure milestones are always sorted ascending by viewThreshold
 campaignSchema.pre<ICampaign>('save', function (next) {
   if (this.milestones && this.milestones.length > 0) {
     this.milestones.sort((a, b) => a.viewThreshold - b.viewThreshold);

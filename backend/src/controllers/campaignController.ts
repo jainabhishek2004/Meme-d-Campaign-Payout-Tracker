@@ -4,10 +4,6 @@ import Campaign, { IMilestone } from '../models/Campaign';
 import { AppError } from '../middleware/errorHandler';
 import cacheService from '../utils/cacheService';
 
-/**
- * Create a new campaign (Brand only)
- * POST /api/campaigns
- */
 export const createCampaign = async (
   req: Request,
   res: Response,
@@ -58,12 +54,10 @@ export const createCampaign = async (
       }
     }
 
-    // Sort milestones ascending by viewThreshold
     const sortedMilestones: IMilestone[] = [...milestones].sort(
       (a, b) => a.viewThreshold - b.viewThreshold
     );
 
-    // Validate unique thresholds and strictly increasing payouts
     const seenThresholds = new Set<number>();
     for (let i = 0; i < sortedMilestones.length; i++) {
       const current = sortedMilestones[i];
@@ -97,7 +91,6 @@ export const createCampaign = async (
       status: 'active',
     });
 
-    // Invalidate Redis active campaigns cache on new campaign creation
     await cacheService.del('campaigns:active:v2');
 
     res.status(201).json({
@@ -109,11 +102,6 @@ export const createCampaign = async (
   }
 };
 
-/**
- * List all active campaigns for creators/public
- * GET /api/campaigns
- * Caches campaign list with Redis (Bonus feature)
- */
 export const getActiveCampaigns = async (
   req: Request,
   res: Response,
@@ -135,7 +123,6 @@ export const getActiveCampaigns = async (
       .populate('brand', 'name')
       .sort({ createdAt: -1 });
 
-    // Cache campaigns in Redis with 60-second TTL
     await cacheService.set(cacheKey, campaigns, 60);
 
     res.status(200).json({
@@ -147,10 +134,6 @@ export const getActiveCampaigns = async (
   }
 };
 
-/**
- * List all campaigns owned by the authenticated brand
- * GET /api/campaigns/my
- */
 export const getMyCampaigns = async (
   req: Request,
   res: Response,
@@ -169,10 +152,6 @@ export const getMyCampaigns = async (
   }
 };
 
-/**
- * Get single campaign details including budgetSpent and budgetRemaining (Brand only)
- * GET /api/campaigns/:id
- */
 export const getCampaignById = async (
   req: Request,
   res: Response,
@@ -191,7 +170,6 @@ export const getCampaignById = async (
       throw new AppError('Campaign not found', 404);
     }
 
-    // Ensure the requesting brand owns this campaign
     if (campaign.brand._id.toString() !== req.user!.id) {
       throw new AppError('Forbidden: You do not own this campaign', 403);
     }

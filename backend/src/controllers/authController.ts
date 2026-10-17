@@ -29,10 +29,6 @@ const generateToken = (id: string, role: string, email: string): string => {
   return jwt.sign({ id, role, email }, secret, { expiresIn });
 };
 
-/**
- * Register a new user (brand or creator)
- * POST /api/auth/signup
- */
 export const signup = async (
   req: Request,
   res: Response,
@@ -95,10 +91,6 @@ export const signup = async (
   }
 };
 
-/**
- * Authenticate existing user & return token
- * POST /api/auth/login
- */
 export const login = async (
   req: Request,
   res: Response,
@@ -151,10 +143,6 @@ export const login = async (
   }
 };
 
-/**
- * Verify a Google Identity Services ID token and issue the app's own JWT.
- * POST /api/auth/google
- */
 export const googleLogin = async (
   req: Request,
   res: Response,
@@ -170,9 +158,6 @@ export const googleLogin = async (
     if (!clientId) {
       throw new AppError('Google sign-in is not configured on the server', 503);
     }
-
-    // Google verifies the token signature and expiry; we additionally bind it
-    // to this app's OAuth client and require a verified email.
     const verifyUrl = new URL('https://oauth2.googleapis.com/tokeninfo');
     verifyUrl.searchParams.set('id_token', credential);
     const googleResponse = await fetch(verifyUrl);
@@ -207,7 +192,6 @@ export const googleLogin = async (
     if (!user) {
       user = await User.findOne({ email });
       if (user) {
-        // Google has verified this email, so link it to an existing account.
         if (user.googleId && user.googleId !== profile.sub) {
           throw new AppError('This email is linked to a different Google account', 409);
         }

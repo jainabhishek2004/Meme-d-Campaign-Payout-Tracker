@@ -1,8 +1,4 @@
-/**
- * Produces a stable identity for common Instagram and YouTube post URLs.
- * Common tracking parameters and fragments are discarded so they cannot
- * create a second submission for the same post.
- */
+
 export function normalizePostLink(input: string): string {
   let url: URL;
   try {
@@ -19,7 +15,7 @@ export function normalizePostLink(input: string): string {
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
   if (hostname === 'instagram.com') {
-    // Instagram post identity is in the path; query parameters are tracking data.
+
     return `https://instagram.com${path}`;
   }
 
@@ -34,8 +30,6 @@ export function normalizePostLink(input: string): string {
     if (videoId) return `https://youtube.com/watch?v=${encodeURIComponent(videoId)}`;
   }
 
-  // Retain functional query parameters for other URL formats, but drop common
-  // analytics/tracking fields and sort the remainder for stable comparison.
   const params = [...url.searchParams.entries()]
     .filter(([key]) => !/^utm_/i.test(key) && !['fbclid', 'gclid', 'igshid', 'si', 'feature'].includes(key.toLowerCase()))
     .sort(([keyA, valueA], [keyB, valueB]) => keyA.localeCompare(keyB) || valueA.localeCompare(valueB));
