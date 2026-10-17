@@ -2,8 +2,9 @@
 
 A full-stack web application where brands create influencer campaigns with milestone-based payout ladders, and creators submit posts to earn money based on view counts.
 
-**Live Demo:** [https://memed-frontend.vercel.app](https://memed-frontend.vercel.app) _(replace with your deployed URL)_  
-**Backend API:** [https://memed-backend.onrender.com](https://memed-backend.onrender.com) _(replace with your deployed URL)_
+**Live Demo:** [https://meme-d-campaign-payout-tracker-rouge.vercel.app/](https://meme-d-campaign-payout-tracker-rouge.vercel.app/) 
+---
+**Backend API:** [https://meme-d-campaign-payout-tracker-1l0u.onrender.com/](https://meme-d-campaign-payout-tracker-1l0u.onrender.com/) 
 
 ---
 
