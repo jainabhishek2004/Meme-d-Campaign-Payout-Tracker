@@ -91,7 +91,8 @@ a { color: inherit; }
 .platform-instagram { background: #efe4e5; }
 .platform-youtube { background: #e3e9eb; }
 .platform-label { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 9px; color: #4f514d; background: rgba(255,255,255,.7); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.google-button-shell iframe { max-width: 100%; }
+.google-button-shell > div > div { display: flex; justify-content: center; }
+.google-button-shell iframe { display: block; max-width: 100%; margin-inline: auto; }
 :focus-visible { outline: 3px solid rgba(92, 115, 85, .48); outline-offset: 3px; }
 
 @media (max-width: 640px) {
