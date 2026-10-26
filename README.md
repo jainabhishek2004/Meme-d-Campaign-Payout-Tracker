@@ -5,7 +5,7 @@ Meme'd is a creator marketplace demo. Brands publish Instagram or YouTube campai
 ## Live app
 
 - **Frontend:** [meme-d-campaign-payout-tracker-rouge.vercel.app](https://meme-d-campaign-payout-tracker-rouge.vercel.app)
-- **Backend health:** [meme-d-campaign-payout-tracker-1l0u.onrender.com/api/health](https://meme-d-campaign-payout-tracker-1.onrender.com/api/health)
+- **Backend health:** [meme-d-campaign-payout-tracker-1l0u.onrender.com/api/health](https://meme-d-campaign-payout-tracker-v34i.onrender.com/api/health)
 - **Repository:** [Meme-d-Campaign-Payout-Tracker](https://github.com/jainabhishek2004/Meme-d-Campaign-Payout-Tracker)
 
 ## Features
